@@ -1,8 +1,9 @@
 import streamlit as st
+import pandas as pd
+from modules.logistics import render_logistics_section
 from modules.predictor import train_risk_model, predict_risk
 from modules.optimizer import optimize_budget
 from modules.triage import render_triage_section
-import pandas as pd
 
 st.set_page_config(page_title="ShelterPulse Armenia", layout="wide")
 st.title("ShelterPulse Armenia: Enterprise Dual-Impact Platform")
@@ -11,13 +12,10 @@ st.markdown("Connecting surplus resources, environmental risk modeling, and symb
 tab1, tab2, tab3, tab4 = st.tabs(["Logistics & Routing", "Risk Predictor (ML)", "Budget Optimizer", "Field Triage & Symbiosis"])
 
 with tab1:
-    st.header("Surplus Food & Resource Routing")
-    st.markdown("Optimized transport network connecting Yerevan supermarkets to shelters.")
-    donors = st.slider("Active Donors", 1, 10, 4)
-    st.success(f"Active route calculated across {donors} distribution nodes in Kentron and Arabkir districts.")
+    render_logistics_section()
 
 with tab2:
-    st.header("Environmental Risk & Exposure Predictor")
+    st.header("Environmental Risk & Exposure Predictor (Random Forest)")
     model = train_risk_model()
     col1, col2 = st.columns(2)
     with col1:
@@ -35,10 +33,7 @@ with tab2:
         st.metric("Predicted Vulnerability Status", risk_labels[cls], f"Confidence: {probs[cls]*100:.1f}%")
 
 with tab3:
-    st.header("Constrained Resource Allocation (SciPy)")
-    bgt = st.number_input("Grant Budget ($)", 500.0, 10000.0, 2500.0)
-    hw = st.slider("Human vs Animal Priority Weight", 0.0, 1.0, 0.6)
-    optimize_budget(bgt, hw)
+    optimize_budget()
 
 with tab4:
     render_triage_section()
